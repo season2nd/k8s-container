@@ -1,0 +1,88 @@
+작업 1: 서비스 정보 확인
+
+1. Docker 서비스를 시작하고 시스템 부팅 시에 시작하도록 구성한다.
+$ sudo systemctl enable docker
+$ sudo systemctl start docker
+
+2. 도커 실행 상태를 확인
+$ ps -ef | grep docker
+
+3. 데몬을 시작하면 기본 config 디렉토리가 생성된다.
+# ls /etc/docker/
+key.json
+
+4. classroom 안에서 클라이언트들이 TLS 인증 없이 docker 데몬에 access할 수 있도록
+daemon.json 파일을 수정한다.
+# dockerd --help
+# vim /etc/docker/daemon.json
+{
+"insecure-registries": ["10.100.0.0/24"]
+}
+
+5. 서비스 데몬 실행
+# systemctl restart docker
+
+6. 방화벽 구성
+# systemctl stop firewalld
+# systemctl disable firewalld
+
+7. Docker 호스트 인스턴스에 대한 버전 정보를 살펴보자.
+# docker version
+8. Info 서브 명령을 사용하여 현재 구성 정보를 살펴보자.
+# docker info
+9. Dockerd가 시작할 때 생성한 디렉터리 계층구조를 살펴보자.
+# tree /var/lib/docker
+
+
+작업 2: 사용자 계정에 권한 부여
+1. admin라는 이름의 계정을 생성하거나 계정 정보를 확인한다.
+# useradd admin -m -s /bin/bash
+# passwd admin
+ 패스 워드는 8자 이상이어야 합니다..
+
+# id admin
+# su - admin
+admin$ docker version
+admin$ exit
+
+2. admin 사용자가 데몬 컨트롤 소켓에 액세스 권한을 갖도록 한다.
+# ls -l /var/run/docker.sock
+사용자를 docker 그룹에 추가한다.
+# usermod -aG docker admin
+# id admin
+
+3. 이제 admin 사용자는 소켓에 액세스할 수 있으므로 root계정은 로그아웃하고 admin 계정으로
+로그인하면 docker에 대한 작업을 수행할 수 있다.
+# su - admin
+admin$ docker version
+
+
+
+Docker Host 구성
+
+su - root로 해주세요 
+
+1. 도커 호스트에서는 데몬을 동작시킬 때 외부 시스템에서 접속할 수 있도록 port를 open해
+주어야한다. systemd 서비스 구성 파일을 열어서 -H tcp:0.0.0.0:2375 옵션을 추가로 넣어준다.
+# cat /lib/systemd/system/docker.service
+...
+ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H fd:// --containerd=/run/containerd/containerd.sock
+ExecReload=/bin/kill -s HUP $MAINPID
+# systemctl stop docker && systemctl start docker
+# systemctl daemon-reload
+
+2. 도커 호스트에서 방화벽으로 포트가 차단되어 있으니 2375/tcp 포트를 열어준다.
+# firewall-cmd --add-port=2375/tcp --permanent
+# firewall-cmd --add-port=2375/tcp
+도커 클라이언트 구성 : other system
+
+3. 클라이언트 시스템에 docker를 설치한 후 도커 호스트로의 접속을 시도하자.
+도커 node3에서 해당 config 작업을 했을 경우 
+
+아래 명령은 다른 쪽 node .. node1, node2... master
+
+client# curl http://10.100.0.<ip 확인>:2375/version
+
+
+
+

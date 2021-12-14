@@ -1,0 +1,445 @@
+링크:https://terabox.com/s/1GgHXyBAm8OAj3Xyd9pyT_g  
+
+다운로드 비번:hcqn
+
+------------------------------
+토큰 , 일반사용자 guru가 kubectl명령어를 쓸수 있게 세팅하는법
+
+나는 node를 추가 하고 싶어요 
+
+처음 생성된 token 키의 유효기간은 24시간 입니다.
+24 시 후에는 만료가 됩니다. 
+
+kubeadm join <k8s master server IP:6443> --token <token키>
+	--discovery-token-ca-cert-hash sha256:<hash 값>
+
+# kubeadm token list
+# kubeadm token create
+
+hash값 찾는 명령어 
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+
+kubeadm join <k8s master server IP:6443> --token 5800gk.ni527b9alvs3rsqf
+	--discovery-token-ca-cert-hash sha256:1fa5059aa47b2af05674bcae160d8344b145e381b1195de74ca0780b3da987da
+
+
+일반사용자 guru가 kubectl명령어를 쓸수 있게 세팅하는법
+user : guru
+password: work 
+
+root로 로그인 하셔서 아래 명령어를 실행하시고 
+mkdir -p ~guru/.kube
+scp master:/etc/kubernetes/admin.conf ~guru/.kube/config
+chown guru:guru ~guru/.kube/config
+
+이후에 guru사용자로 로그인하셔서 kubectl 명령어 되는지 확인하세요 
+
+------------------------------------------------------------------------------------------
+pod : 쿠버네티스의 API의 최소 단위 입니다.
+하나의 파드안에는  하나의 컨테이너 또는 여러개의 컨테이넉 존재 합니다 
+
+IP address:
+하나의 파드는 하나의 IP address를 가집니다.
+
+교재 45page의 multi pod를 만들어 보세요 
+1. 이후에 kubectl create -f multi-pod.yaml 을 실행합니다 
+2. kubectl get pods로 status 정보 확인
+3. kubectl describe pod multipod
+
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  2m53s  default-scheduler  Successfully assigned default/multipod to node3.example.com
+  Normal  Pulling    2m52s  kubelet            Pulling image "nginx:1.14"
+  Normal  Pulled     2m39s  kubelet            Successfully pulled image "nginx:1.14" in 13.730384523s
+  Normal  Created    2m39s  kubelet            Created container nginx-container
+  Normal  Started    2m38s  kubelet            Started container nginx-container
+  Normal  Pulling    2m38s  kubelet            Pulling image "centos:7"
+  Normal  Pulled     2m24s  kubelet            Successfully pulled image "centos:7" in 14.399622971s
+  Normal  Created    2m24s  kubelet            Created container centos-container
+  Normal  Started    2m24s  kubelet            Started container centos-container
+[root@master ~]# 
+
+1. scheduler에 의해서 node에 할당을 합니다
+2. node에 할당이 되면 kubelet은 docker 에게 요청을 합니다 (docker명령어로 변환)
+3. 해당 image가 node에 없으면 hub.docker.com 확인 합니다 
+4.  pulling작업을 합니다(있으면 sucess, 없으면 fail)
+5. pulled가 됩니다 
+6. container create
+7. container start
+
+kubectl exec multipod -c centos-container -it -- /bin/bash
+10.42.0.1	multipod
+
+kubectl exec multipod -c nginx-container -it -- /bin/bash
+10.42.0.1	multipod
+
+실습으로 
+nginx에 들어가셔서 index.html파일을 변경하세요 
+이후에 centos에서 확인해보세요 (curl 명령어로 확인해보세요)
+
+# kubectl delete pods --all  파드를 다 삭제할때 
+
+실습 
+1. hub.docker.com에서 여러분이 만드신 이미지를 가지고 계실 겁니다
+--image= 여러분이 만드신 이미지이름   --> CLI로 설치 
+
+#kubectl run webserver --image=comnik00/test:v2 --port 80
+
+2. 여러분의 만드신 이미지를 yaml로 만드셔서 설치해보세요 
+
+kubectl run webserver --image=comnik00/test:v2 --port 80 --dry-run -o yaml > my-pod.yaml
+
+kubeclt create -f my-pod.yaml
+
+1. CLI로 해서 만드시는 방식
+2. web을 통해서 만드는 방식
+3.  보안상이슈로 로그인ssl을 구성해서 하는 방식 
+--------------------------------------------------------------------------------------------------
+pending : pod 배포 명령이 있었으나 pod내부 에서 1개 이상의 컨테이너가 실행 할 준비가 되어 있지 않았을 경우
+실행까지 했는데 오류가 발생 할 경우 pending 상태에서 대기 ... : scheduler 에서 해당 정보를 받아서 API 전달 합니다 
+
+Running : pod 가 워크노드에 바인딩 되어있고 pod의 모든 컨테이너 생성. 정상 동작 상태
+
+Succeed : pod의 모든 컨테이너들이 성공적으로 release가 되었을때를 의미합니다
+
+Failed : pod 의 모든 컨터이너가 종료 되었으나 한개 이상의 컨터이너가 실패로 종료 되었을때  예를들어서 replicas라는 서비스 여러개의 파드를 running 하는게 그중에 한개가 정상적으로 종료 되지 않았을대,,,
+
+unknow : 임의의 이유로 인해 pod의 상태를 알수가 없음 예를들어 통신 오류등
+----------------------------------------------------------------------------------------------------
+레이블 이란
+
+-node를 포함하여 pod, deployment등 모든 리소스에 할당
+-리소스의 특성을 분류하고, selector를 이용하여 선택
+- key: value  한쌍으로 적용 합니다 
+
+결재 관련 
+mainui pod , product list pod, order pod,  login pod.....
+(컨테이너4)             (컨테이너가 3)
+
+rel=stable  릴리즈가 stable 버전 갯수하고 다를수가 있습니다.
+rel=beta
+rel=canary...
+---------------------------------------------------
+3개의 pod를 만들어 봅니다 
+
+1. cmd로 pod만들기 : label로 default로 만들어 집니다.
+2. label이 없는 pod : yaml로 통해서 label 없이 만듬
+3. label이 있는 pod
+
+kubectl get pods --show-labels 
+
+metadata:
+  creationTimestamp: null
+  labels:
+    run: webserver
+  name: webserver
+spec:
+
+# cp webserver-pod.yaml label-pod.yaml
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: weblael
+  labels:
+    rel: stable
+         
+root@master ~]# kubectl get pods --show-labels 
+NAME        READY   STATUS    RESTARTS   AGE     LABELS
+weblael     1/1     Running   0          97s     name=weblabel,rel=stable
+webnpod     1/1     Running   0          7m51s   <none>
+webserver   1/1     Running   0          15m     run=webserver
+[root@master ~]# kubectl get pods -l name=weblabel
+NAME      READY   STATUS    RESTARTS   AGE
+weblael   1/1     Running   0          4m3s
+
+# kubectl get pods --selector name=weblabel
+
+# kubectl get pods -l < lable_name> 
+:레이블을 selector로 찾을수 있습니다 
+
+#kubectl label pod weblael app=db
+#kubectl label pod nginx-pod app=web-services type=frontend
+
+실습 
+앞전에 만든 label이 없는 파드 <none>으로 나오는 파드에다가 app=db 를 넣어주세요 
+
+ 앞에 app=db라고 지정되어있기 때문에 아래처럼 변경시에는 에러 
+# kubectl label pod weblael app=redis
+error: 'app' already has a value (db), and --overwrite is false
+[root@master ~]# kubectl label pod weblael app=redis --overwrite
+pod/weblael labeled
+
+kubectl get pod -L app
+
+# kubectl label pod weblael app-
+---------------------------------------------------------------------------------
+work node label을 지정 합니다 
+
+예를들어서 work node특성을 알고자 하고 구분을 하기 위해서 
+label 을 지정해서 분류를 합니다 
+
+ML관련 pod구성시에 특정 기능을(GPU급)을 필요로 할경우 label을 사용해서 분류를 할수 있습니다 
+
+node2.example.com    Ready    <none>                 21h   v1.22.2   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=node2.example.com,kubernetes.io/os=linux,ssd=true
+node3.example.com    Ready    <none>                 21h   v1.22.2   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=node3.example.com,kubernetes.io/os=linux
+[root@master ~]# 
+
+# kubectl get nodes -L ssd
+
+어떤 파드는 ML 특성상 SSD와 GPU 급 H/W를 필요로 합니다 .
+
+nodeSelector:
+ssd: "true"
+gpu: "true"
+
+node1에다가 두개의 label을 설정시에
+node1여기다가 설치가 됩니다.
+
+Events:
+  Type     Reason            Age                 From               Message
+  ----     ------            ----                ----               -------
+  Warning  FailedScheduling  46s (x2 over 118s)  default-scheduler  0/4 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 3 node(s) didn't match Pod's node affinity/selector.
+[root@master ~]# 
+
+
+
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  27s                default-scheduler  Successfully assigned default/redis to node1.example.com
+
+
+  Normal   BackOff    22s                kubelet            Back-off pulling image "redis123"
+  Warning  Failed     22s                kubelet            Error: ImagePullBackOff
+
+  Normal   Pulling    12s (x2 over 26s)  kubelet            Pulling image "redis123"
+  Warning  Failed     9s (x2 over 23s)   kubelet            Failed to pull image "redis123": rpc error: code = Unknown desc = Error response from daemon: pull access denied for redis123, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+
+
+  Warning  Failed     9s (x2 over 23s)   kubelet            Error: ErrImagePull
+[root@master ~]# 
+
+
+# docker search <이미지이름>redis
+
+# kubectl edit pod redis
+
+image이름을 redis123에서 redis 변경하고 저장
+-------------------------------------------------------------------------------------------------------
+init container 
+
+예를들어서 login을 지원하는 application 
+
+해당 container는 DB container가 먼저 선행시 되어야만 정상적인 login이 이루어 집니다 
+이럴 경우 init container를 사용하여서 
+선행시 되어야하는 container를 먼저 실행한 이후에 login application container가 실행 되도록 구성 할수 있습니다 
+
+https://kubernetes.io/ko/docs/concepts/workloads/pods/init-containers/
+
+
+'sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+
+until 컴맨드 조건이 false인 경우에만 반복하겠습니다 . 어디까지 do 전까지 반복하겠습니다 
+do 앞의 명령이 실패되면 myservice 안에서 제대로 동작 중이지 않으면 계속 반복 합니다.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: busybox:1.28
+    command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+  - name: init-mydb
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+---------------------------------------------------------------------------------------------------
+work node의 pause 프로세스  하는 역할 : pod의 컨테이너들이 linux 리눅스 namespace를 공유 할수 있도록 해줍니다 .( 실제 특정 컨테이가 문제 발생시 다시 live시키는 역할도 합니다)
+
+좀비 프로세스를 정리해주는 역활도 담당합니다 .. 기타 다양한 역할을 담당합니다 
+
+실제로는 어떠한 작업도 하지 않습니다.
+----------------------------------------------------------------------------------------------------
+# docker inspect redis
+# kubernetes는 describe로 컨테이너 정보를 확인 할수 있습니다 
+------------------------------------------------------------------------------------------
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpu-demo
+  namespace: cpu-example
+spec:
+  containers:
+  - name: cpu-demo-ctr
+    image: vish/stress
+    resources:
+      limits:
+        cpu: "1"
+      requests:
+        cpu: "0.5"
+    args:
+    - -cpus
+    - "2"
+
+
+--------------------------------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memory-demo
+  namespace: mem-example
+spec:
+  containers:
+  - name: memory-demo-ctr
+    image: polinux/stress
+    resources:
+      limits:
+        memory: "200Mi"
+      requests:
+        memory: "100Mi"
+    command: ["stress"]
+    args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1"]
+
+----------------------------------------------------------------------
+
+1 Mib = 1024kib
+
+IEC standard
+1 kib = 1024bbyte
+
+SI standard
+1kb = 1000bytes
+
+예를들어서 cpu4개를 가지고 있습니다 
+
+cpu : 1 (1core) = 1000m 100%
+cpu : 200m  
+
+  containers:
+  - image: nginx:1.14
+    name: webserver
+    resources:
+      limits:
+        memory: 300Mi
+        cpu: 300m
+
+limits만 지정했는데 자동으로 requests까지 지정 됩니다.
+
+    resources:
+      requests:
+        memory: 300Mi
+        cpu: 300m
+    ports:
+
+requests만 설정하면 requests만 리소스에 나옵니다.
+------------------------------------------------------------------------------------------------------
+side car : 
+예를들어서 하나의 웹서버 컨테이너 로그를 만들어내고 
+해당 로그를 어딘가에 저장을 하면서 다른 컨테이너는 이를 분석 
+로그를 만들어 주어야 실행이 되는 컨테이너 파드 입니다 
+
+단독으로 동작하지 않는 파드의 형태로 컨테이너 2개가 같이 동작하는 패턴입니다.
+
+Adapter container: 
+외부에 있는 데이터를 가지고 와서 서비스를 하는 형태 
+외부에 어떤 시스템의 상태에 대한 모니터 정보가 들어있는 공간이 있는 것을 
+adapter를 통해서 받아와서 웹서버에 전달 ,,.,
+
+Ambassador 
+
+웹서버 컨테이너에 고객이 접속을 하면 어떤 데이터나 로그가 남는데
+그 데이터나 로그를 캐쉬를 모아서 ambassador 를 통해 외부로 분산 해서 내보내는 컨테이너 입니다 
+
+---------------------------------------------------------------------------------------------
+replicationController
+
+deployment의 가장 basic한 컨트롤러 입니다 
+쿠버 버전 1 버전부터 있었습니다. (현재 버전 1.22)
+
+요구하는 pod의 개수를 보장하며 pod집합의 실행을 항상 안정적으로 유지 하는 것이 목표
+요구하는 pod의 개수가 부족하면 template을 이용해 pod를 추가 
+요구하는 pod의 개수가 많으면 최근에 생성된 pod를 삭제 합니다 
+
+기본구성(yaml)
+selector
+replicas
+template 
+
+
+[root@master ~]# kubectl get replicationcontrollers rc-nginx 
+NAME       DESIRED   CURRENT   READY   AGE
+rc-nginx   3         3         3       4m20s
+
+에어컨에 비유했던것을 기억해주세요 
+
+# kubectl get rc rc-nginx 
+
+kubectl label pod weblael app=redis --overwrite
+
+kubectl edit rc <이름> 
+
+
+실습 
+1. 개수를 변경해주세요 5개 로 
+
+2. kubectl scale rc <이름> --replicas=2    -> replicase를 2개로 변경
+
+3. kubectl edit를 사용해서 nginx 1.15버전을 변경해보세요 
+이후 변경된 버전이 적용되었는지 확인해보세요(describe)
+# kubectl describe rc rc-nginx 
+
+주의 사항: replicas 개수 사이즈 조정을 할 경우 향후에 버전 변경시 old버전이 그대로 pod에 남아 있는 경우가 있습니다 
+이럴경우 해당 pod를 삭제를 하게 되면 새로운 pod가 생성되면서 버전을 맞춰 줍니다. 
+
+1. replicationcontroller를 실행
+2. 자신이 가지고 있는 label selector와 일치 하는 labels를 가진 pod를 검색
+3. 검색된 pod의 수와 자신이 desired 하는 수의 pod의 수가 일치하는 확인
+4. 개수가 많은 경우 실행 중인 pod중에서 (최근에 만들어진pod가 삭제)
+5. 개수가 적은 경우 정의된 템플릿 대로 원하는 수와 일치하는 만큼 pod를 실행 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
