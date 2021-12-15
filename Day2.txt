@@ -1,0 +1,429 @@
+컨테이너 : 프로세스 (불안정합니다)
+도커 
+
+파드 (Pod) : 하나의 파드( 하나의 IP , 하나의hostname)
+안에는 하나의 컨테이너 또는 멀티 컨테이너가 존재합니다 
+
+쿠버네티스에서의 가장 작은 최소단위 
+쿠버네티스 설치시 문제 발생 할경우 
+kubeadm reset 을 합니다 (master node, work node)
+
+하지만 kubeadm init은 무조건 master node에서만 하셔야 합니다 
+
+토큰키는 24시간이 지나면 사라집니다
+향후에 추가적인 work node를 추가 할때는 그래서 새로 token를 생성해주셔야 합니다 
+
+kubeadm join <master IP>:6443 --token <토큰값> --discovery-token-ca-cert sha256:<해쉬값>
+
+토큰값 확인 방법
+kubeadm token list로  확인합니다 
+생성은 
+kubeadm token create 
+
+아래는 해쉬값을 찾는 명령어 입니다 
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+
+CNI (container network interface) 
+쿠버네티스에서는 쿠버네티스의 nw를 add 하셔서 따로 설치 하셔야합니다 
+
+칼리코, 위브넷, 플라넷 
+---------------------------------------------------
+쿠버네티스에서는 pod 자체에 여러가 추가적인 기능을 넣어두었습니다 
+그래서 컨테이너가 죽지 않게 되어있습니다 
+-------------------------------------------------------------------------
+kueadm : config init , reset
+kubelet : 다 설치 하는데 work node master의 communication을 담당
+control-plane(master)
+
+kubectl 명령어.
+------------------------------------------------------------------------
+치킨 집( docker)을 차림 장사 
+강남구 3호점 까지... 
+
+프랜차이즈 : 
+사장님-> 부사장님 -> 임원 -> 감사 매니저 -> 각 지점 매니저 -> 직원 등등
+
+사장님 ( request.... kubectl 이라는 명령어)
+부사장님(API server) 이 임원들에게 물어봅니다
+사장님이 이야기한 명령이 유효한지 확인합니다.
+
+감사매니저 (controller): 제대로 본사의 정책을 잘 지키고 있는지 감시 하고
+잘 안지켰을때는 그것을 부사장에게 이야기하고 수정까지 요청합니다.
+
+임원(scheduller) : 각 매장의 분포도를 파악하고 확인 적절하게 지역선택을
+돕는 역할을 담당합니다
+
+etcd (본사의 DB): 각 매장의 정보 , 특징, 서버의 특징,,,, 
+
+매장(work node)
+: 매장 매니저 (kubelet) : 본사의 정책을 확인하고 각 매장에 전달해주는 역할을 담당
+
+치킨집(pod): 매장을 총괄하는 매니저.. 
+----------------------------------------------------------------------------
+API : k8s의 API를 사용하도록 요청을 받고 요청이 유효한지 검사
+schuduler: 파드를 실행할 노드를 선택
+controller: 파드를 관찰하며 개수를 보장
+etcd: key: value로 구성되어있는 저장소 
+
+딕셔너리 (사전) 타입: 클라우드, 빅데이터, 파이썬,,,,
+예) 영어 사전
+알파벳 : 단어 
+단어를 찾기위해서는 알파벳을 가지고 단어를 찾습니다 
+알파벳은 삭제가 불가능합니다 
+단어는 삭제가 가능합니다 
+
+work node들의 상태정보 , 컨테이너가 동작 중인 상태 등등 ,,
+
+work node
+kubelet: 모든 노드에서 실행되는 k8s 에이전트
+cAdvisor: 컨테이너의 모니터링 툴, kubelet 안에 포함
+kube-proxy: k8s의 n/w동작을 관리
+
+Add-on : cAdvisor, coreDNS( dns add-on: 컨테이니어와 컨테이너의 n.w를 연결
+
+webui
+
+# kubectl api-resources 
+
+#kubectl expain pod
+
+해당 서비스는 k8s가 버전을 업그레이드 할때마다 매번 새로운 서비스를 만들어서 제공합니다 
+
+# kubectl describe node master.example.com 
+# kubectl describe pod <pod의 이름>
+
+k8s에서 가장큰 의미를 가지고 있는건 namespace(예)윈도우의 논리적 디스크로 D드라이브, E드라이브 
+label은 그 드라이브 폴더 라고 볼수있습니다 .
+
+# kubectl run webserver --image=nginx --port 80
+
+[root@master ~]# kubectl get pods
+NAME        READY   STATUS    RESTARTS   AGE
+webserver   1/1     Running   0          75s
+
+READY : 준비,..
+에어컨: 온도,. 현재온도:  20  ->21 ->22 ->23
+희망온도 : 23
+
+# kubectl get pods
+
+# kubectl describe pod webserver
+
+도커에서는 exec로 해당 컨테이너안에 들어갔습니다 
+쿠버는요?
+# kubectl exec webserver -it -- /bin/bash
+
+curl 10.40.0.2	
+
+실습 
+여러분들이 hub.docker.com의 nginx 이미지를 k8s에서 
+아까와 같은 명령으로 pod를 실행해주세요 
+
+1. 이후에 어떤 노드에서 실행되는지 확인하세요
+2. 해당 pod의 IP주소를 체크해주세요 
+3. ngnix pod의 index.html을 수정하시기 바랍니다 
+4. 이후에 host에서 curl명령으로 내가 변경한 index.html파일을 체크해주세요 
+------------------------------------------------------------------------
+
+#kubectl delete 
+# kubectl delete pod webserver
+
+# kubectl delete pods --all
+
+[root@master ~]# kubectl run web --image=nginx 
+pod/web created
+[root@master ~]# kubectl get pods
+NAME   READY   STATUS    RESTARTS   AGE
+web    1/1     Running   0          7s
+
+kubectl run <pod이름> --image=<이미지 이름>
+
+# kubectl get pod web -o wide
+# watch kubectl get pod web -o wide
+
+1. web 이라는 pod가 node3에서 running 합니다 
+2. docker rm -f <web pod 컨테이너id>
+3. 실제로 해당 pod는 죽었습니다 
+4. command 중에 /pause라는 파드가 
+기존의 정상적으로 master node에서 delete라는 명령으로 삭제가 아닌
+해당 node에서 삭제시에는 자동으로 해당 pod를 다시 start를 합니다 
+또한 무언가 해당 pod가 garbage식으로 남아 있을 경우도 정리를 도맡아 합니다 
+/pause는 이상의 역할을 하지 않는 프로세스 입니다 
+
+#kubectl get pod web -o yaml
+#kubectl get pod web -o json
+
+# kubectl run webserver --image=nginx:1.14 --port 80 --dry-run=client
+
+--dry-run : 실행이 잘되는지 확인해주는 옵션입니다.
+
+# kubectl run webserver --image=nginx:1.14 --port 80 --dry-run=client -o yaml
+
+
+# kubectl run webserver --image=nginx:1.14 --port 80 --dry-run=client -o yaml > nginx.yaml
+
+
+[root@master ~]# cat nginx.yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: webserver
+  name: webserver
+spec:
+  containers:
+  - image: nginx:1.14
+    name: webserver
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+[root@master ~]# 
+
+# kubectl create -f nginx.yaml 
+
+# kubectl delete pods --all   --> 모든 파드를 삭제 
+
+# kubectl delete deployments.apps deweb 
+
+# kubectl create deployment deweb --image=nginx:1.14 --dry-run=client -o yaml >deweb.yaml
+
+# kubectl create deployment deweb --image=nginx:1.14 
+# kubectl edit deployments.apps deweb
+replicas 숫자를 수정
+
+replicas와 replicaset은 cli 옵션이 없습니다.
+
+----------------------------------------------------------------
+yaml의 공식 사이트 
+yaml.org 
+
+1. 들여쓰기 .. 칸을 띄워씁니다 ( 2칸, 4칸 까지도 가능합니다)
+들여쓰기도 문법입니다 .
+2. "-"  배열 : 문자로 여러개를 나열 합니다 
+3. scalar 문법: ':'을 기준으로 key: value를 설정합니다.
+
+CLI에서 자동으로 yaml을 만들수 있는 서비스는 
+pod와 deployment 입니다 
+deployment는 다른 서비스 ( rs, rc 와 거의 동일한 구조로 가져 갑니다
+해서 서비스의 버전과 kind만 수정하시면 해당 yaml을 재활용 할수 있습니다)
+
+yaml. 절차서를 만드는 이유 
+유지보수, 데이타를 저장할수 있습니다.
+---------------------------------------------------
+pod 쿠버네티스 가장 최소 단위 (하나의 ip add, hostname)
+
+하나의 컨테이너 또는 다양한 멀티컨테이너가 존재합니다 
+
+
+kubectl create -f 
+이미 object가 존재 할 경우 error발생 
+
+kubectl apply -f 새로운 object가 생성됩니다 
+이미 object가 존재 할 경우 object를 구성합니다( 새루운 부분적인 spec을 받아 들임)
+
+replace .. object가 존재 하지 않을 경우 error
+object가 존재 할경우 기존 object 삭제 후에 새롭게 생성 합니다 
+
+처음에 만들때 create 만드냐 아니며 apply로 만드냐
+이후에 해당yaml수정시에 .. create만든것을 apply로 수정할수 있냐
+
+처음에 만들때 apply만든것은 다시 apply로 수정할수 있냐 
+--------------------------------------------------------------------------------
+
+# kubectl describe pod multipod
+
+
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  34m   default-scheduler  Successfully assigned default/multipod to node3.example.com
+
+  Normal  Pulled     34m   kubelet            Container image "nginx:1.14" already present on machine
+  Normal  Created    34m   kubelet            Created container nginx-container
+  Normal  Started    34m   kubelet            Started container nginx-container
+  Normal  Pulled     34m   kubelet            Container image "centos:7" already present on machine
+  Normal  Created    34m   kubelet            Created container centos-container
+  Normal  Started    34m   kubelet            Started container centos-container
+[root@master ~]# 
+
+1. node에 할당합니다 (scheduller가 node3을 알려주고 API가 할당)
+2. local에 내가 원하는 이미지가 있는지 먼저 확인합니다 
+3.  있으면 바로 컨테이너를 생성 (create) 없으면 hub.docker.com에 갔다 옵니다
+4. 컨테이너를 start를 합니다 
+
+name: nginx-container
+name: centos-container
+
+kubectl exec multipod -c centos-container -it -- /bin/bash
+
+kubectl exec multipod -c nginx-container -it -- /bin/bash
+
+
+namespace: 논리적 파티션
+내일은 label에 대해서 공부하겠습니다 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
