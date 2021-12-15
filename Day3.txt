@@ -150,6 +150,93 @@ redis2   1/1     Running   0          9m20s
 3. server=web 이것을 추가해주세요 
 
 4. server=web 레이블을 삭제해주세요 
+------------------------------------------------------------------ 
+https://kubernetes.io/ko/docs/concepts/workloads/pods/init-containers/
+
+init container 
+
+예를들어서 login 을 지원하는 application 
+해당 컨테이너는 DB 컨테이너가 먼저 선행시 되어야만 정상적인 login이 이루어집니다 
+이럴 경우 init container를 사용
+선행시 되어야 하는 컨테이너를 먼저 실행한 이후에 login applicaion 컨테인너가 실행 되도록 구성 할수 있습니다 
+
+ command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+  - 
+
+util 컴맨드 조건이 false인 경우에만 반복 하겠습니다. 
+어디까지 do 전까지 반복
+
+do앞의 명령이 실패되면 myservice 안에서 제대로 동작 중이지 않으면 계속 반복
+-----------------------------------------------------------------------------
+파티션
+IP 
+cpu/memory
+hostname
+user name
+
+docker inspect <컨테이너 ID>
+kubectl describe pod <pod이름>
+
+예를들어서 cpu 4개를 가지고 있습니다 
+4core 그 중에 
+cpu : 1은 (1core) = 1000m   = 100%
+cpu : 200m 
+
+4core : 400% = 4000m
+-------------------------------------------------------------
+limit : 만 설정했을 경우 request도 같이 설정이 됩니다 
+
+request만 설정시에는 request만 설정되어서 나옵니다.
+
+메모리는 
+1Mib = 1024Kib
+
+IEC standard
+1kib = 1024byte 
+-----------------------------------------------------------
+side car는 
+단독으로는 동작하지 않는 파드의 형태로 컨테이너 2개가 같이 동작하는 패턴을 가지고 있습니다 
+
+예를들어 하나의 웹서버 컨테이너 로그를 만들고 
+해당 로그를 어딘가에 저장을 하면서 다른 컨테이너는 이른 분석 
+로그를 만들어주어야 실행이 되는 컨테이너 파드를 우리는 side car 
+
+Adapter
+외부에 있는 데이터를 내부로 가지고 와서 서비를 하는 형태를 의미 합니다 
+외부에 어떤 시스템의 상태에 대한 모니터 정보가 들어있는 공간이 있는것을 adapter를 통해서 받아와서 웹서버에게 전달,,, 
+
+ambassador
+웹서버 컨테이너에 고객이 접속을 하면 어떤 데이터나 로그가 남는데
+그 데이터나 로그의 캐쉬를 모아서 ambassador 를 통해서 외부로 분산해서 내보내는 컨테이너를 의미합니다 
+------------------------------------------------------------------------
+replicationcontroller 줄여서 rc라고도 합니다 
+
+개수를 보장해주는 component : controller 
+
+rc, rs, deploy 기본적으로 개수를 보장해 줍니다 
+
+해당 서비스의 개수를 보장해 줍니다
+쿠버네티스 초창기 버전(1) 에 나온 배포 서비스 중에 하나 입니다 (현재 1.23)
+
+kubectl create deployment deweb --image=nginx:1.14 --dry-run=client -o yaml >deweb.yaml
+
+[root@master ~]# kubectl create -f deweb.yaml 
+replicationcontroller/rc-nginx created
+
+요구하는 pod의 개수를 보장하며 pod집합의 실행을 항상 안정적으로 유지하는것이 목표 입니다 
+
+요구하는 pod의 개수가 부족하면 template을 이용해 pod를 추가
+요구하는 pod의 개수가 많으면 최근에 생성된 pod를 삭제 합니다 
+replicas
+selector:
+template:
+
+[root@master ~]# kubectl get rc rc-nginx 
+NAME       DESIRED   CURRENT   READY   AGE
+rc-nginx   3         3         3       6m18s
+[root@master ~]# 
+
+
 
 
 
