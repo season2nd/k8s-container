@@ -238,3 +238,24 @@ rc-nginx   3         3         3       6m18s
 
 # kubectl edit rc rc-nginx 
 # kubectl scale rc rc-nginx --replicas=2
+
+실습 
+
+1. 개수를 변경해주세요  ( 개수를 늘리거나 줄이거나 )
+
+kubectl scale....edit
+
+2. nginx버전을 수정해보세요 
+
+# kubectl delete rc rc-nginx --cascade=false
+
+--cascade=false는 rc만 삭제 합니다 pod로 남아 있습니다 
+
+1. rc를 실행
+2. 자신이 가지고 있는 label selector와 일치하는 labels를 가진 pod를 검색
+3. 검색된 pod의 수와 자신이 desired하는 수의 pod의 수가 일치하는지 확인
+4. 개수가 많은 경우 실행중인 pod중에서 (최근에 만들어진 pod가 삭제)
+5. 개수가 적은 경우 정의된 template 대로 원하는 수(replicas) 와 일치하는 만큼의 pod를 실행 
+
+-------------------------------------------------
+replicaSet은 rc와 동일하나 match expression만 다릅니다 
