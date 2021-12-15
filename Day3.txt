@@ -259,3 +259,53 @@ kubectl scale....edit
 
 -------------------------------------------------
 replicaSet은 rc와 동일하나 match expression만 다릅니다 
+
+좀더 풍부한 selector가 존재 합니다 
+
+NotIn , IN
+
+DosenotExist , Exist 
+
+변수 : 변하는 수 
+상수: 변하지 않는 수 
+
+a=1
+b=2
+c=3
+ a = 1,2,3,4,5
+장바구니(a) = 우유, 빵, 고기, 술,,,,
+변수명 = 
+한번 정해지면 고정 = 우유,고기, 사이다,,, ... 
+[cache, test, hello]
+
+in, notin은 key와 value가 존재 해야 합니다 
+dosenotexist, exist 는 key만 있으면 
+
+matchExpression:
+	- {key: name, operator: In, values: [mainui]}
+    - {key: rel, operator: NotIn, values: ["beta", "canary"]}
+
+네임 키 안에 mainui가 있으면(in)
+릴리즈 안에 beat 또는 canary가 안에 없으면 (notin)
+
+--------------------------------------------------------------------------
+static pod: 내가 원하는 work node에다 manual 하게 pod를 실행하는 방법 입니다 
+
+1. master node에서 해당 static pod를 만들어보세요 
+
+2. kubectl get pods로 확인해보세요 
+
+3. # cd /var/lib/kubelet/ 해당 폴더의 config.yaml 파일에서
+staticPodPath: 를 수정하시면 됩니다 
+
+해당 경로 수정을 적용 하기 위해서는 
+systemctl restart kubelet을 해주셔야 합니다 
+
+4. pod 삭제 방법은 해당 node에서 yaml파일을 삭제하시면 됩니다.
+
+
+
+
+
+
+
