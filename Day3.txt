@@ -39,3 +39,117 @@ root로 로그인 하셔서 아래 명령어를 실행하시고
 mkdir -p ~guru/.kube
 scp master:/etc/kubernetes/admin.conf ~guru/.kube/config
 chown guru:guru ~guru/.kube/config
+
+------------------------------------------------------------------
+[root@master ~]# cat mulitpod.yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multipod
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:1.14
+    ports:
+    - containerPort: 80
+  - name: centos-container
+    image: centos:7
+    command:
+    - sleep
+         - "10000"
+------------------------------------------------------------------
+
+MLops...
+일본 : 로봇 ( 손정의 --> 보스톤 다이나맥스...) 
+1G -> 2G -> 3G -> 4G(LTE) -> 5G(VR, AR)(language C#)-> 6G
+
+---------------------------------------------------------
+pending : ML(GPU, SSD)
+scheduller 판단,, 어떤노드가 적합한지 
+etcd, cAdvisor... 
+
+사람이 인식을 시켜야 합니다. work node들에 대한 정보를 넣어줘야합니다
+label로 설정을 해줘야 합니다.
+
+pod 배포 명령이 있었으나 pod 내부에서 1개 이상의 컨테이너가 실행할 준비가 
+되어 있지 않았을 경우 실행까지 했는데 
+오류가 발생했을 경우, pending 대기 상태로 빠집니다 
+
+scheduler에 의해서  해당 정보는 API에게 전달됩니다 
+
+Running : pod가 워크노드에 바인딩 되어있고 pod의 모든 컨테이너 생성, 정상 동작 상태 이야기 합니다 
+
+succeed : pod의 모든 컨테이너들이 성공적으로 release 가 되었을때를 의미 합니다 
+
+failed : pod의 모든 컨테이너가 종료 되었으나 한개 이상의 컨테이너가 실패로 종료 되었을때 ,, 예를들어 replicas(서비스의 개수)라는 서비스 여러개의 pod를 런닝 하는 그중에 한개가 정상적을 종료 되지 않았을때 
+
+unknown: 임의의 이유로 인해 pod의 상태를 알수가 없음 
+예) 통신 오류 등등 
+-------------------------------------------------------------------------------
+https://kubernetes.io/ko/docs/concepts/containers/images/
+
+이미지 자체가 깨져 있을수 있으니 해당 부분을 check해야 됩니다 
+이미지(설치 파일) : 1. 이미지가 깨져있는지 여부 2. 보안상의 취약점
+
+자세한 사항은 위의 URL을 참조하세요 
+--------------------------------------------------------------------
+labels 레이블이란
+
+-node를 포함하여 pod, deployment 등 모든 리소스에 할당
+-리소스 특성을 분류하고, selector(yaml파일의)를 이용하여 선택 
+-key: value 한쌍으로 적용합니다 
+
+mainui pod , product list pod, order pod,,,,, login pod
+
+rel=stable
+rel=beta
+rel=canary 
+--------------------------------------------------------------------------------
+3개 종류의 pod를 만들어 보겠습니다
+1. CLI pod만들기 : label이 자동으로 만들어 집니다. 
+2. label 이없는 파드 : 내가 만든 yaml 파일을 통해서 pod를 만들면 label은 없습니다 
+3. label 이 있는 경우 
+
+# kubectl run redis --image=redis 
+#kubectl get pods
+
+[root@master ~]# kubectl get pod --show-labels 
+NAME       READY   STATUS    RESTARTS      AGE    LABELS
+multipod   2/2     Running   8 (34m ago)   18h    <none>
+redis      1/1     Running   0             2m3s   run=redis
+test2      1/1     Running   2 (34m ago)   143m   <none>
+test3      1/1     Running   2 (34m ago)   140m   <none>
+
+# kubectl label pod redis2 app=db
+
+# kubectl label pod redis2 app=nodb --overwrite
+
+[root@master ~]# kubectl get pod --show-labels 
+NAME       READY   STATUS    RESTARTS      AGE     LABELS
+multipod   2/2     Running   8 (52m ago)   19h     <none>
+redis      1/1     Running   0             20m     run=redis
+redis1     1/1     Running   0             11m     run=redis1
+redis2     1/1     Running   0             8m22s   app=nodb,db=NoSQL
+test2      1/1     Running   2 (52m ago)   161m    app=web-services,type=frontend
+test3      1/1     Running   2 (52m ago)   158m    <none>
+[root@master ~]# kubectl get pod --selector app=db
+No resources found in default namespace.
+[root@master ~]# kubectl get pod --selector app=nodb
+NAME     READY   STATUS    RESTARTS   AGE
+redis2   1/1     Running   0          9m20s
+
+# kubectl label pod redis2 app-
+
+--------------------------------------------------------------------
+실습
+1. 여러분들이 yaml 파일을 만들어주세요 
+(CLI 에서 yaml 파일을 만드셔도 되구요, 기존을 있는걸로 쓰셔도 됩니다)
+
+2. label을 넣어주세요 
+    app=db 
+3. server=web 이것을 추가해주세요 
+
+4. server=web 레이블을 삭제해주세요 
+
+
+
