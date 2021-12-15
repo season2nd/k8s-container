@@ -236,7 +236,5 @@ NAME       DESIRED   CURRENT   READY   AGE
 rc-nginx   3         3         3       6m18s
 [root@master ~]# 
 
-
-
-
-
+# kubectl edit rc rc-nginx 
+# kubectl scale rc rc-nginx --replicas=2
