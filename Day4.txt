@@ -82,6 +82,8 @@ job: 모든 application 이 계속해서 running 할 필요가 없습니다
 하지만 마무리 못하면 restart합니다 
 
 
+# kubectl run testpod --image=centos:7 --command sleep 5
+# kubectl run testpod --image=centos:7 --command sleep 5 --dry-run=client -o yaml > testpod.yaml
 
 
  
