@@ -48,4 +48,13 @@ history로 확인한 revision에서 내가 원하는 revision 숫자를 넣어�
 [root@master ~]# kubectl delete deployments.apps deploy 
 deployment.apps "deploy" deleted
 
+annotation 
 
+리소스에 대한 정보 전달을 목적으로 사용 
+구성은 label과 동일합니다 key: value 구조로 가져갑니다 
+
+annotations:
+  imageregistry: "http://registry.example.com
+  build: "hong"
+  builddate: "20211216"
+  
