@@ -149,6 +149,7 @@ tokens :  를 확인하세요
  
  webui의 nodeport추가 방법
  
+ wget으로 다운로드 받으신 recommend.yaml
  
  Service 부분을 확인하셔서
 type: NodePort를 추가합니다 
@@ -160,7 +161,7 @@ spec:
     k8s-app: kubernetes-dashboard
   type: NodePort   ----> 이부분을 추가해줍니다 
 
-
+# kubectl apply -f recommended.yaml 	
  
  [root@master ~]# kubectl get deployments.apps -n kubernetes-dashboard 
 NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
