@@ -147,5 +147,30 @@ tokens :  를 확인하세요
  http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
  위의 URL에 들어가셔서 token키를 입력해주시면 화면을 볼수 있습니다 
  
+ webui의 nodeport추가 방법
  
+ 
+ Service 부분을 확인하셔서
+type: NodePort를 추가합니다 
+spec:
+  ports:
+    - port: 443
+      targetPort: 8443
+  selector:
+    k8s-app: kubernetes-dashboard
+  type: NodePort   ----> 이부분을 추가해줍니다 
+
+
+ 
+ [root@master ~]# kubectl get deployments.apps -n kubernetes-dashboard 
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+dashboard-metrics-scraper   1/1     1            1           2d4h
+kubernetes-dashboard        1/1     1            1           2d4h
+[root@master ~]# kubectl get service -n kubernetes-dashboard 
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+dashboard-metrics-scraper   ClusterIP   10.104.137.35    <none>        8000/TCP        2d4h
+kubernetes-dashboard        NodePort    10.108.220.255   <none>        443:31724/TCP   2d4h
+[root@master ~]# 
+
+
 
