@@ -95,3 +95,18 @@ onFailure : 컨테이너가 비 정상 종료시 다시 start 시킴
 Parallelism:    -->동시에 running되어야 하는 pod의 개수
 Completions:  
  
+ ------------------------------------------------------
+ cluster IP 실습
+ 
+ 1. deployment를 하나 띄워주세요  (nginx)
+replicas 3 이라고 했을때 
+3대의 nginx pod에 들어가셔서 index.html파일을 변경해주세요 
+
+Test nginx1
+Test nginx2
+Test nginx3 
+
+2. 제가 clusterip.yaml 파일을 실행 합니다 
+
+3. kubectl get svc
+4. curl 10.100.100.100
