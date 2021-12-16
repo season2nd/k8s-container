@@ -13,4 +13,33 @@ deployment의 궁긍적인 목표는 배포와 rollout, rollup을 하기 위해�
 2. rs에서는 실행시킬 pod를 만듭니다(예)nginx1.14 버전등. 
 rs는 controller처럼 pod의 개수를 보장해 줍니다.
 
+kubectl create deployment deploy --image=nginx:1.14 --dry-run=client -o yaml >deploy.yaml
+
+
+# kubectl create -f deploy.yaml --record=true
+
+# kubectl get deployments.apps deploy 
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+deploy   3/3     3            3           3m
+
+# kubectl set image deployment deploy deploy nginx=nginx:1.15 --record=true
+
+# kubectl rollout history deployment deploy 
+
+# kubectl set image deployment deploy deploy nginx=nginx:1.16 --record=true
+
+모니터링 명령어 입니다 
+실시간 확인 watch를 붙입니다
+
+#watch kubectl rollout status deployment deploy
+#watch kubectl rollout resume deployment deploy
+#watch kubectl rollout pause deployment deploy
+
+rollout은 서비스 대상은 아래의 3가지 입니다 
+  *  deployments
+  *  daemonsets
+  *  statefulsets
+
+# kubectl rollout undo deployment deploy --to-revision=1
+
 
