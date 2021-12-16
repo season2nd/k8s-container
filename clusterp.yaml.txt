@@ -6,7 +6,7 @@ spec:
   type: ClusterIP
   clusterIP: 10.100.100.100
   selector:
-    app: webui
+    app: deploy
   ports:
   - protocol: TCP
     port: 80
