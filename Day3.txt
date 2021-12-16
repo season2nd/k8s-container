@@ -289,7 +289,15 @@ matchExpression:
 릴리즈 안에 beat 또는 canary가 안에 없으면 (notin)
 
 --------------------------------------------------------------------------
-static pod: 내가 원하는 work node에다 manual 하게 pod를 실행하는 방법 입니다 
+static pod: 
+
+일반적인 k8s 구조는 master 서버를 통해서 work node에 실행되는 구조 입니다 
+내가 원하는 work node에다 manual 하게 pod를 실행하는 방법 입니다 
+work node의 /etc/kubernetes/manifests/ 해당 폴더에 yaml파일을 만드시면 
+그 work node에 pod가 생성 됩니다
+
+pod 삭제 방법은 해당 yaml파일을 삭제하시면 됩니다. 
+master node에서 kubectl delete로 삭제가 안됩니다.
 
 1. master node에서 해당 static pod를 만들어보세요 
 
