@@ -144,4 +144,8 @@ tokens :  를 확인하세요
 
 #kubectl describe secret <toknes> -n kubernetes-dashboard
 
+ http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+ 위의 URL에 들어가셔서 token키를 입력해주시면 화면을 볼수 있습니다 
+ 
+ 
 
