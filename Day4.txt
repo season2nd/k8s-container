@@ -110,3 +110,14 @@ Test nginx3
 
 3. kubectl get svc
 4. curl 10.100.100.100
+
+[root@master ~]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+deploy-7f4464bcdf-2gftm   1/1     Running   0          36s
+deploy-7f4464bcdf-hz4cb   1/1     Running   0          36s
+deploy-7f4464bcdf-rqhr6   1/1     Running   0          36s
+[root@master ~]# kubectl exec deploy-7f4464bcdf-2gftm -it -- /bin/bash
+root@deploy-7f4464bcdf-2gftm:/# cd /usr/share/nginx/html
+root@deploy-7f4464bcdf-2gftm:/usr/share/nginx/html# echo "Test Web1" >index.html 
+root@deploy-7f4464bcdf-2gftm:/usr/share/nginx/html# cat index.html 
+Test Web1
