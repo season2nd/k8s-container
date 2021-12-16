@@ -87,4 +87,10 @@ job: 모든 application 이 계속해서 running 할 필요가 없습니다
 
 
  
+
+restartPolicy : Never  ==>pod restart pod를 다시 실행
+onFailure : 컨테이너가 비 정상 종료시 다시 start 시킴
+(주의 사항 : onFailure는 pod가 아니라 container를 지칭합니다)
+
+
  
