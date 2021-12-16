@@ -43,7 +43,9 @@ rollout은 서비스 대상은 아래의 3가지 입니다
 
 # kubectl rollout undo deployment deploy --to-revision=1  
 history로 확인한 revision에서 내가 원하는 revision 숫자를 넣어서 원하는 버전으로 다시 rollout할수 있습니다 
-
-
+ 
+ deployment 
+[root@master ~]# kubectl delete deployments.apps deploy 
+deployment.apps "deploy" deleted
 
 
