@@ -64,6 +64,16 @@ annotations:
  단 마지막 문장에 숫자가 들어갑니다 ( 숫자 카운트 0번째 요소부터 시작합니다)
  
  
- 
+1. sf.yaml 업로드한 yaml을 확인해주세요 
+2. kubectl create -f sf.yaml   
+nginx1.14
+
+3. kubectl edit statefulsets sf-nginx 
+에서 image 버전을 nginx1.15로 변경 
+
+4. # kubectl rollout undo statefulset sf-nginx  
+기존의 1.14버전으로 rollout 합니다 
+
+
  
  
