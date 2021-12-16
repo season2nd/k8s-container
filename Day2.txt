@@ -13,7 +13,7 @@ kubeadm reset 을 합니다 (master node, work node)
 토큰키는 24시간이 지나면 사라집니다
 향후에 추가적인 work node를 추가 할때는 그래서 새로 token를 생성해주셔야 합니다 
 
-kubeadm join <master IP>:6443 --token <토큰값> --discovery-token-ca-cert sha256:<해쉬값>
+kubeadm join <master IP>:6443 --token <토큰값> --discovery-token-ca-cert-hash sha256:<해쉬값>
 
 토큰값 확인 방법
 kubeadm token list로  확인합니다 
