@@ -58,3 +58,12 @@ annotations:
   build: "hong"
   builddate: "20211216"
   
+ 
+ statfulset
+ 기본적으로 pod의 이름을 보장해 줍니다 
+ 단 마지막 문장에 숫자가 들어갑니다 ( 숫자 카운트 0번째 요소부터 시작합니다)
+ 
+ 
+ 
+ 
+ 
