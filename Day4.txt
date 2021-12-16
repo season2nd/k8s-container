@@ -121,3 +121,27 @@ root@deploy-7f4464bcdf-2gftm:/# cd /usr/share/nginx/html
 root@deploy-7f4464bcdf-2gftm:/usr/share/nginx/html# echo "Test Web1" >index.html 
 root@deploy-7f4464bcdf-2gftm:/usr/share/nginx/html# cat index.html 
 Test Web1
+
+-----------------------------------------------------------------------------
+webui 띄우는 방법
+
+https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/
+
+1. kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml
+
+2.  kubectl proxy
+
+3. 로그인하기 위해서는 token key를 알아야 합니다 
+#kubectl get serviceaccount -A
+
+
+토큰키 확인
+# kubectl describe serviceaccount kubernetes-dashboard -n kubernetes-dashboard
+
+tokens :  를 확인하세요 
+
+토큰키 체크하기 
+
+#kubectl describe secret <toknes> -n kubernetes-dashboard
+
+
