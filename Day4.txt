@@ -173,5 +173,10 @@ dashboard-metrics-scraper   ClusterIP   10.104.137.35    <none>        8000/TCP 
 kubernetes-dashboard        NodePort    10.108.220.255   <none>        443:31724/TCP   2d4h
 [root@master ~]# 
 
+--------------------------------------------------------
+
+clusterIP --> nodePort --> loadbalancer (L4) 까지 구성해야지 가능한 type의 서비스 입니다 
+ExternelIP : 외부의 LB IP주소가 들어가야 합니다 
+해당 externel IP 로 접속하면 각 노드의 1~3 의 포트 (랜덤포트) 에 연결되어서 실제 pod3개 중에 하나에 연결을 시켜 줍니다 
 
 
