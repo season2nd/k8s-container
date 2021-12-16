@@ -74,6 +74,9 @@ nginx1.14
 4. # kubectl rollout undo statefulset sf-nginx  
 기존의 1.14버전으로 rollout 합니다 
 
+daemonset : 워크 노드당 하나의 pod를 보장합니다 
+
+
 
  
  
