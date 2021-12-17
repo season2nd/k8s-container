@@ -101,7 +101,16 @@ kubernetes-admin@kubernetes
   
   #kubectl config set-context blue@kubernetes --cluster=kubernetes --user=kubernetes-admin --namespace=blue
   
+  #kubectl config view : 내가 추가한 blue가 들어가 있는지 확인해주세요 
+  #kubectl config use-context 
   
+  [root@master ~]# kubectl config current-context
+kubernetes-admin@kubernetes
+
+[root@master ~]# kubectl config use-context blue@kubernetes
+Switched to context "blue@kubernetes".
+[root@master ~]# 
+
   
 
 
