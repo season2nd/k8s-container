@@ -37,6 +37,46 @@ timeoutSeconds : 1 1초 기달려서 응답이 없으면 실패
 sucessThreshold: 1 1번 성공이면 200번 상태코드가 떨어짐... 성공이라고 봅니다 ,.
 failureThreshold: 3 연속해서 3번 실패하면 실패로 보겠다.
 
+---------------------------------------------------------------
+namespace : 클러스터 하나를 여러개의 논리적인 단위로 나누어서 사용
+k8s 클러스터 하나를 여러팀이나 사용자가 함께 공유
+용도에 따라서 실행해야 하는 App를 구분할때 사용
+
+[root@master ~]# kubectl get pods
+No resources found in default namespace.
+
+# kubectl get pods --all-namespaces 
+
+# kubectl cluster-info 
+
+물리적인 정보를 확인하는 명령어 
+
+롯데
+롯데 홈쇼핑: red
+롯데 면세점: blue
+롯데 백화점: orange
+
+# kubectl create namespace --help
+Usage:
+  kubectl create namespace NAME [--dry-run=server|client|none] [options]
+  
+  # kubectl create ns blue
+
+
+# kubectl create ns orange --dry-run=client -o yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: orange
+# kubectl create ns orange --dry-run=client -o yaml > nsorange.yaml
+
+
+
+
+
+
+
 
 
 
