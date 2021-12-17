@@ -111,7 +111,12 @@ kubernetes-admin@kubernetes
 Switched to context "blue@kubernetes".
 [root@master ~]# 
 
-  
+[root@master ~]# kubectl get pods
+No resources found in blue namespace.
+[root@master ~]# 
+
+# kubectl get pods -n default
+
 
 
 
