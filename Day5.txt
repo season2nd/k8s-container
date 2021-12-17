@@ -28,9 +28,8 @@ path /root로 root의 페이지로 주기적으로 접속을 합니다
 예를들어 데이터 존재 유무가 중요합니다
 해당 파일이 있어야 그 파드가 건강하다는 판단의 기준이 됩니다 
 
-
-
 # kubectl describe pod nginx-pod 
+Liveness:       http-get http://:80/ delay=0s timeout=1s period=10s #success=1 #failure=3
 
 
 
