@@ -1,1 +1,7 @@
-test
+#kubectl create -f env.yaml 
+
+#kubectl get pods  # 파드의 이름을 확인하세요 
+
+#kubectl exec nginxpod -- env    # env에 내가 적용한 env가 적용되었는지 확인합니다 
+
+
