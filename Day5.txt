@@ -85,10 +85,24 @@ nginxpod   1/1     Running   0          2m9s
 기존의 nginxpod.yaml 을 수정하셔서 blue도 좋구 red 라는 namespace에다가 해당 pod를 실행하게 해주세요 
 
 
+# kubectl config --help 
 
+[root@master ~]# kubectl config current-context
+kubernetes-admin@kubernetes
 
+# kubectl config view
 
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
 
+  set-context    : 논리적인 부분( 내가 추가한 namespace)의 정보를 추가 할수 있습니다 
+  
+  #kubectl config set-context blue@kubernetes --cluster=kubernetes --user=kubernetes-admin --namespace=blue
+  
+  
+  
 
 
 
