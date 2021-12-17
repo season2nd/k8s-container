@@ -61,7 +61,7 @@ Usage:
   kubectl create namespace NAME [--dry-run=server|client|none] [options]
   
   # kubectl create ns blue
-
+  CLI에서 namespace를 만드는 방식 
 
 # kubectl create ns orange --dry-run=client -o yaml
 
@@ -69,14 +69,16 @@ apiVersion: v1
 kind: Namespace
 metadata:
    name: orange
+
 # kubectl create ns orange --dry-run=client -o yaml > nsorange.yaml
+yaml파일을 통해서 namespace를 만드는 방식 
 
+[root@master ~]# kubectl get pods
+No resources found in default namespace.
 
-
-
-
-
-
+[root@master ~]# kubectl get pod -n orange
+NAME       READY   STATUS    RESTARTS   AGE
+nginxpod   1/1     Running   0          2m9s
 
 
 
