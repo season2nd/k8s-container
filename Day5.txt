@@ -30,6 +30,7 @@ path /root로 root의 페이지로 주기적으로 접속을 합니다
 
 
 
+# kubectl describe pod nginx-pod 
 
 
 
