@@ -81,6 +81,8 @@ NAME       READY   STATUS    RESTARTS   AGE
 nginxpod   1/1     Running   0          2m9s
 
 
+실습
+기존의 nginxpod.yaml 을 수정하셔서 blue도 좋구 red 라는 namespace에다가 해당 pod를 실행하게 해주세요 
 
 
 
